@@ -2,6 +2,12 @@
 # @Author: JsPako, ItsRommels
 # @Webpage: https://github.com/JsPako/AmazonWatch
 
+def generateUUID():
+    import uuid
+    id = uuid.uuid4()
+    return str(id)[:28]
+
+
 def firstTime():
     f = open("settings.txt", "a+")
     f.close()
@@ -13,12 +19,6 @@ def firstTime():
             file.write("uuid:'" + generateUUID() + "'\n")
             file.write("ip:'" + "'\n")
             file.write("port:'" + "'\n")
-
-
-def generateUUID():
-    import uuid
-    id = uuid.uuid4()
-    return str(id)[:28]
 
 
 def searchFile(num):
