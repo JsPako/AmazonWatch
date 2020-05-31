@@ -4,7 +4,7 @@
 
 def generateUUID():
     import uuid
-    id = uuid.uuid4()
+    id = uuid.uuid1()
     return str(id)[:28]
 
 
