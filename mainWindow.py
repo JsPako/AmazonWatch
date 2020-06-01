@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'mainWindow.ui'
-#
-# Created by: PyQt5 UI code generator 5.13.0
-#
-# WARNING! All changes made in this file will be lost!
+# @Author: JsPako, ItsRommels
+# @Webpage: https://github.com/JsPako/AmazonWatch
 
 import os
 import webbrowser
+import setup
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 from connectWindow import Ui_connectWindow
 from aboutWindow import Ui_aboutWindow
-from setup import searchFile, deleteFile
 
 
 class Ui_mainWindow(object):
@@ -284,7 +280,7 @@ class Ui_mainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.currentStatus.setFont(font)
-        if searchFile(2) == "":
+        if setup.searchFile(2) == "":
             self.currentStatus.setText("Disconnected")
         else:
             self.currentStatus.setText("Connected")
@@ -300,11 +296,11 @@ class Ui_mainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.currentIP.setFont(font)
-        self.currentIP.setText(searchFile(2))
+        self.currentIP.setText(setup.searchFile(2))
         self.currentIP.setObjectName("currentIP")
         self.updateButton = QtWidgets.QPushButton(self.serverFrame)
         self.updateButton.setGeometry(QtCore.QRect(160, 60, 71, 23))
-        self.updateButton.clicked.connect(self.updateLabel)
+        self.updateButton.clicked.connect(self.updateServer)
         font = QtGui.QFont()
         font.setPointSize(8)
         self.updateButton.setFont(font)
@@ -431,8 +427,8 @@ class Ui_mainWindow(object):
         self.actionAbout.setStatusTip(
             _translate("mainWindow", "More information."))
 
-    def updateLabel(self, mainWindow):
-        currentIP = searchFile(2)
+    def updateServer(self, mainWindow):
+        currentIP = setup.searchFile(2)
         if currentIP != "":
             self.currentStatus.setText("Connected")
             self.currentIP.setText(currentIP)
@@ -441,9 +437,9 @@ class Ui_mainWindow(object):
             self.currentIP.setText(currentIP)
 
     def deleteData(self, mainWindow):
-        deleteFile(2)
-        deleteFile(3)
-        Ui_mainWindow.updateLabel(self, mainWindow)
+        setup.deleteFile(2)
+        setup.deleteFile(3)
+        Ui_mainWindow.updateServer(self, mainWindow)
 
     def addList(self, mainWindow):
         error = False
@@ -519,8 +515,9 @@ class Ui_mainWindow(object):
             f.close()
 
 
-def startUi():
+if __name__ == "__main__":
     import sys
+    setup.firstTime()
     app = QtWidgets.QApplication(sys.argv)
     mainWindow = QtWidgets.QMainWindow()
     ui = Ui_mainWindow()
