@@ -5,25 +5,13 @@
 import os
 import webbrowser
 import setup
+import sys
+import multiprocessing
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
-from connectWindow import Ui_connectWindow
-from aboutWindow import Ui_aboutWindow
+from PyQt5.QtWidgets import QMessageBox, QSystemTrayIcon, QMenu
 
 
 class Ui_mainWindow(object):
-    def openConnectWindow(self):
-        self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_connectWindow()
-        self.ui.setupUi(self.window)
-        self.window.show()
-
-    def openAboutWindow(self):
-        self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_aboutWindow()
-        self.ui.setupUi(self.window)
-        self.window.show()
-
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
         mainWindow.setWindowModality(QtCore.Qt.NonModal)
@@ -50,7 +38,6 @@ class Ui_mainWindow(object):
         self.confirmButton.setFont(font)
         self.confirmButton.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.confirmButton.setObjectName("confirmButton")
-        self.confirmButton.clicked.connect(self.addList)
         self.itemName = QtWidgets.QLineEdit(self.centralwidget)
         self.itemName.setGeometry(QtCore.QRect(130, 340, 361, 20))
         font = QtGui.QFont()
@@ -67,13 +54,6 @@ class Ui_mainWindow(object):
         self.itemURL.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.itemURL.setAcceptDrops(False)
         self.itemURL.setObjectName("itemURL")
-        self.validateButton = QtWidgets.QPushButton(self.centralwidget)
-        self.validateButton.setGeometry(QtCore.QRect(200, 420, 131, 21))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.validateButton.setFont(font)
-        self.validateButton.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.validateButton.setObjectName("validateButton")
         self.itemNameLabel = QtWidgets.QLabel(self.centralwidget)
         self.itemNameLabel.setGeometry(QtCore.QRect(20, 340, 101, 21))
         font = QtGui.QFont()
@@ -91,11 +71,10 @@ class Ui_mainWindow(object):
         self.itemURLLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.itemURLLabel.setObjectName("itemURLLabel")
         self.removeButton = QtWidgets.QPushButton(self.centralwidget)
-        self.removeButton.setGeometry(QtCore.QRect(680, 320, 101, 23))
+        self.removeButton.setGeometry(QtCore.QRect(680, 330, 101, 23))
         self.removeButton.setObjectName("removeButton")
-        self.removeButton.clicked.connect(self.deleteList)
-        self.serverFrame = QtWidgets.QFrame(self.centralwidget)
-        self.serverFrame.setGeometry(QtCore.QRect(530, 360, 241, 91))
+        self.APIFrame = QtWidgets.QFrame(self.centralwidget)
+        self.APIFrame.setGeometry(QtCore.QRect(540, 360, 241, 91))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -264,48 +243,47 @@ class Ui_mainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled,
                          QtGui.QPalette.PlaceholderText, brush)
-        self.serverFrame.setPalette(palette)
-        self.serverFrame.setAutoFillBackground(True)
-        self.serverFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.serverFrame.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.serverFrame.setObjectName("serverFrame")
-        self.statusLabel = QtWidgets.QLabel(self.serverFrame)
-        self.statusLabel.setGeometry(QtCore.QRect(10, 0, 111, 31))
+        self.APIFrame.setPalette(palette)
+        self.APIFrame.setAutoFillBackground(True)
+        self.APIFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.APIFrame.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.APIFrame.setObjectName("APIFrame")
+        self.regionLabel = QtWidgets.QLabel(self.APIFrame)
+        self.regionLabel.setGeometry(QtCore.QRect(10, 0, 101, 31))
         font = QtGui.QFont()
         font.setPointSize(9)
-        self.statusLabel.setFont(font)
-        self.statusLabel.setObjectName("statusLabel")
-        self.currentStatus = QtWidgets.QLabel(self.serverFrame)
-        self.currentStatus.setGeometry(QtCore.QRect(120, 0, 111, 31))
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.currentStatus.setFont(font)
-        if setup.searchFile(2) == "":
-            self.currentStatus.setText("Disconnected")
-        else:
-            self.currentStatus.setText("Connected")
-        self.currentStatus.setObjectName("currentStatus")
-        self.ipLabel = QtWidgets.QLabel(self.serverFrame)
-        self.ipLabel.setGeometry(QtCore.QRect(10, 30, 61, 31))
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.ipLabel.setFont(font)
-        self.ipLabel.setObjectName("ipLabel")
-        self.currentIP = QtWidgets.QLabel(self.serverFrame)
-        self.currentIP.setGeometry(QtCore.QRect(70, 30, 161, 31))
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.currentIP.setFont(font)
-        self.currentIP.setText(setup.searchFile(2))
-        self.currentIP.setObjectName("currentIP")
-        self.updateButton = QtWidgets.QPushButton(self.serverFrame)
+        self.regionLabel.setFont(font)
+        self.regionLabel.setObjectName("regionLabel")
+        self.updateButton = QtWidgets.QPushButton(self.APIFrame)
         self.updateButton.setGeometry(QtCore.QRect(160, 60, 71, 23))
-        self.updateButton.clicked.connect(self.updateServer)
         font = QtGui.QFont()
         font.setPointSize(8)
         self.updateButton.setFont(font)
         self.updateButton.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.updateButton.setObjectName("updateButton")
+        self.regionSelect = QtWidgets.QLabel(self.APIFrame)
+        self.regionSelect.setGeometry(QtCore.QRect(100, 0, 51, 31))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.regionSelect.setFont(font)
+        self.regionSelect.setText("")
+        self.regionSelect.setAlignment(QtCore.Qt.AlignCenter)
+        self.regionSelect.setObjectName("regionSelect")
+        self.apiLabel = QtWidgets.QLabel(self.APIFrame)
+        self.apiLabel.setGeometry(QtCore.QRect(10, 30, 61, 31))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.apiLabel.setFont(font)
+        self.apiLabel.setObjectName("apiLabel")
+        self.apiSelect = QtWidgets.QLabel(self.APIFrame)
+        self.apiSelect.setGeometry(QtCore.QRect(70, 30, 161, 31))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.apiSelect.setFont(font)
+        self.apiSelect.setText("")
+        self.apiSelect.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.apiSelect.setObjectName("apiSelect")
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(20, 10, 761, 301))
         self.tableWidget.setMaximumSize(QtCore.QSize(761, 16777215))
@@ -314,11 +292,6 @@ class Ui_mainWindow(object):
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(4)
         self.tableWidget.setRowCount(0)
-        header = self.tableWidget.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
@@ -335,67 +308,78 @@ class Ui_mainWindow(object):
         self.menuBar.setObjectName("menuBar")
         self.menuFile = QtWidgets.QMenu(self.menuBar)
         self.menuFile.setObjectName("menuFile")
-        self.menuHelp = QtWidgets.QMenu(self.menuBar)
-        self.menuHelp.setObjectName("menuHelp")
+        self.menuAbout = QtWidgets.QMenu(self.menuBar)
+        self.menuAbout.setObjectName("menuAbout")
         mainWindow.setMenuBar(self.menuBar)
         self.statusbar = QtWidgets.QStatusBar(mainWindow)
         self.statusbar.setObjectName("statusbar")
         mainWindow.setStatusBar(self.statusbar)
-        self.actionConnect = QtWidgets.QAction(mainWindow)
-        self.actionConnect.setIconVisibleInMenu(False)
-        self.actionConnect.setObjectName("actionConnect")
-        self.actionDisconnect = QtWidgets.QAction(mainWindow)
-        self.actionDisconnect.setIconVisibleInMenu(False)
-        self.actionDisconnect.setObjectName("actionDisconnect")
+        self.actionAPI = QtWidgets.QAction(mainWindow)
+        self.actionAPI.setIconVisibleInMenu(False)
+        self.actionAPI.setObjectName("actionAPI")
+        self.actionDirectory = QtWidgets.QAction(mainWindow)
+        self.actionDirectory.setShortcut("")
+        self.actionDirectory.setIconVisibleInMenu(False)
+        self.actionDirectory.setObjectName("actionDirectory")
         self.actionHelp = QtWidgets.QAction(mainWindow)
+        self.actionHelp.setShortcut("")
         self.actionHelp.setObjectName("actionHelp")
         self.actionAbout = QtWidgets.QAction(mainWindow)
         self.actionAbout.setObjectName("actionAbout")
-        self.menuFile.addAction(self.actionConnect)
-        self.menuFile.addAction(self.actionDisconnect)
-        self.menuHelp.addAction(self.actionHelp)
-        self.menuHelp.addAction(self.actionAbout)
+        self.actionPrefrences = QtWidgets.QAction(mainWindow)
+        self.actionPrefrences.setObjectName("actionPrefrences")
+        self.actionGithub = QtWidgets.QAction(mainWindow)
+        self.actionGithub.setObjectName("actionGithub")
+        self.menuFile.addAction(self.actionAPI)
+        self.menuFile.addAction(self.actionGithub)
+        self.menuFile.addAction(self.actionDirectory)
+        self.menuAbout.addAction(self.actionHelp)
+        self.menuAbout.addAction(self.actionAbout)
         self.menuBar.addAction(self.menuFile.menuAction())
-        self.menuBar.addAction(self.menuHelp.menuAction())
+        self.menuBar.addAction(self.menuAbout.menuAction())
 
         self.retranslateUi(mainWindow)
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
-        self.updateList(mainWindow)
+        mainWindow.setTabOrder(self.tableWidget, self.removeButton)
 
     def retranslateUi(self, mainWindow):
         _translate = QtCore.QCoreApplication.translate
         mainWindow.setWindowTitle(_translate("mainWindow", "AmazonWatch"))
         self.confirmButton.setStatusTip(_translate(
             "mainWindow", "Add this product to tracking list."))
-        self.confirmButton.setText(_translate("mainWindow", "Confirm"))
+        self.confirmButton.setText(_translate("mainWindow", "Add to list"))
         self.itemName.setStatusTip(_translate(
-            "mainWindow", "Name of the product to help you keep organised. Does not get sent to server."))
+            "mainWindow", "Name of the product to help you keep organised."))
         self.itemName.setPlaceholderText(_translate(
             "mainWindow", "Amazon Echo Dot 3rd Gen"))
         self.itemURL.setStatusTip(_translate(
-            "mainWindow", "Amazon Link to the item. Gets sent to server."))
+            "mainWindow", "Product amazon link. Sent to the API make sure it is correct."))
         self.itemURL.setPlaceholderText(_translate(
             "mainWindow", "https://www.amazon.co.uk/Echo-Dot-3rd-Gen-Charcoal/dp/B07PJV3JPR/"))
-        self.validateButton.setStatusTip(_translate(
-            "mainWindow", "Check if the URL entered is valid."))
-        self.validateButton.setText(_translate("mainWindow", "Validate URL"))
         self.itemNameLabel.setStatusTip(_translate(
-            "mainWindow", "Name of the product to help you keep organised. Does not get sent to server."))
+            "mainWindow", "Name of the product to help you keep organised."))
         self.itemNameLabel.setText(_translate("mainWindow", "Product Name"))
         self.itemURLLabel.setStatusTip(_translate(
-            "mainWindow", "Amazon Link to the item. Gets sent to server."))
+            "mainWindow", "Product amazon link. Sent to the API make sure it is correct."))
         self.itemURLLabel.setText(_translate("mainWindow", "Amazon URL"))
         self.removeButton.setStatusTip(_translate(
             "mainWindow", "Delete a product from the list."))
         self.removeButton.setText(_translate("mainWindow", "Delete"))
-        self.serverFrame.setStatusTip(
-            _translate("mainWindow", "Server Status"))
-        self.statusLabel.setText(_translate(
-            "mainWindow", "Connection Status:"))
-        self.ipLabel.setText(_translate("mainWindow", "Server IP:"))
-        self.updateButton.setStatusTip(_translate(
-            "mainWindow", "Add this product to tracking list."))
-        self.updateButton.setText(_translate("mainWindow", "Update"))
+        self.APIFrame.setStatusTip(_translate(
+            "mainWindow", "Extra Information"))
+        self.regionLabel.setStatusTip(
+            _translate("mainWindow", "Extra Information"))
+        self.regionLabel.setText(_translate("mainWindow", "Amazon Region:"))
+        self.updateButton.setStatusTip(
+            _translate("mainWindow", "Refresh everything."))
+        self.updateButton.setText(_translate("mainWindow", "Refresh"))
+        self.regionSelect.setStatusTip(
+            _translate("mainWindow", "Extra Information"))
+        self.apiLabel.setStatusTip(_translate(
+            "mainWindow", "Extra Information"))
+        self.apiLabel.setText(_translate("mainWindow", "API Key :"))
+        self.apiSelect.setStatusTip(_translate(
+            "mainWindow", "Extra Information"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("mainWindow", "Product Name"))
         item = self.tableWidget.horizontalHeaderItem(1)
@@ -404,42 +388,26 @@ class Ui_mainWindow(object):
         item.setText(_translate("mainWindow", "Current Price"))
         item = self.tableWidget.horizontalHeaderItem(3)
         item.setText(_translate("mainWindow", "Price Drop"))
-        self.menuFile.setTitle(_translate("mainWindow", "Connect"))
-        self.menuHelp.setTitle(_translate("mainWindow", "Help"))
-        self.actionConnect.setText(_translate(
-            "mainWindow", "Connect to Server"))
-        self.actionConnect.setStatusTip(_translate(
-            "mainWindow", "New connection to server."))
-        self.actionConnect.setShortcut(_translate("mainWindow", "Ctrl+N"))
-        self.actionConnect.triggered.connect(self.openConnectWindow)
-        self.actionDisconnect.setText(_translate("mainWindow", "Disconnect"))
-        self.actionDisconnect.setStatusTip(
-            _translate("mainWindow", "Disconnect from server."))
-        self.actionDisconnect.triggered.connect(self.deleteData)
-        self.actionDisconnect.setShortcut(_translate("mainWindow", "Ctrl+X"))
+        self.menuFile.setTitle(_translate("mainWindow", "Settings"))
+        self.menuAbout.setTitle(_translate("mainWindow", "Help"))
+        self.actionAPI.setText(_translate("mainWindow", "Access Keys"))
+        self.actionAPI.setStatusTip(_translate(
+            "mainWindow", "Amazon API access keys settings."))
+        self.actionAPI.setShortcut(_translate("mainWindow", "Ctrl+N"))
+        self.actionDirectory.setText(
+            _translate("mainWindow", "File Directory"))
+        self.actionDirectory.setStatusTip(
+            _translate("mainWindow", "Open file directory."))
         self.actionHelp.setText(_translate("mainWindow", "Help"))
         self.actionHelp.setStatusTip(_translate("mainWindow", "Need help?"))
-        self.actionHelp.setShortcut(_translate("mainWindow", "Ctrl+H"))
-        self.actionHelp.triggered.connect(lambda: webbrowser.open(
-            'https://github.com/JsPako/AmazonWatch'))
         self.actionAbout.setText(_translate("mainWindow", "About"))
-        self.actionAbout.triggered.connect(self.openAboutWindow)
         self.actionAbout.setStatusTip(
             _translate("mainWindow", "More information."))
-
-    def updateServer(self, mainWindow):
-        currentIP = setup.searchFile(2)
-        if currentIP != "":
-            self.currentStatus.setText("Connected")
-            self.currentIP.setText(currentIP)
-        else:
-            self.currentStatus.setText("Disconnected")
-            self.currentIP.setText(currentIP)
-
-    def deleteData(self, mainWindow):
-        setup.deleteFile(2)
-        setup.deleteFile(3)
-        Ui_mainWindow.updateServer(self, mainWindow)
+        self.actionPrefrences.setText(_translate("mainWindow", "Prefrences"))
+        self.actionGithub.setText(_translate(
+            "mainWindow", "Github Repository"))
+        self.actionGithub.setStatusTip(
+            _translate("mainWindow", "Open Github."))
 
     def addList(self, mainWindow):
         error = False
@@ -515,12 +483,40 @@ class Ui_mainWindow(object):
             f.close()
 
 
-if __name__ == "__main__":
-    import sys
-    setup.firstTime()
+def apiTray():
+    app = QtWidgets.QApplication(sys.argv)
+    scriptDir = os.path.dirname(os.path.realpath(__file__))
+    trayIcon = QSystemTrayIcon(QtGui.QIcon(scriptDir + "/resources/logo.png"))
+    trayIcon.setToolTip("AmazonWatch")
+    trayIcon.show()
+    menu = QMenu()
+    openAction = menu.addAction("Open GUI")
+    openAction.triggered.connect(startGuiProcess)
+    exitAction = menu.addAction("Exit")
+    exitAction.triggered.connect(app.quit)
+    trayIcon.setContextMenu(menu)
+    sys.exit(app.exec_())
+
+
+def startGui():
     app = QtWidgets.QApplication(sys.argv)
     mainWindow = QtWidgets.QMainWindow()
     ui = Ui_mainWindow()
     ui.setupUi(mainWindow)
     mainWindow.show()
     sys.exit(app.exec_())
+
+
+def startGuiProcess():
+    guiProcess = multiprocessing.Process(target=startGui)
+    guiProcess.start()
+
+
+def startApiProcess():
+    apiProcess = multiprocessing.Process(target=apiTray)
+    apiProcess.start()
+
+
+if __name__ == "__main__":
+    startApiProcess()
+    startGuiProcess()

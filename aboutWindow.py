@@ -100,7 +100,7 @@ class Ui_aboutWindow(object):
     def retranslateUi(self, aboutWindow):
         _translate = QtCore.QCoreApplication.translate
         aboutWindow.setWindowTitle(_translate("aboutWindow", "About"))
-        self.label.setText(_translate("aboutWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">A client application for tracking items on amazon. Programmed in Python 3.7 using the PyQt5 tool kit.</span></p><p><br/><span style=\" font-size:9pt;\">Client: </span><a href=\"https://github.com/JsPako/AmazonWatch/releases\"><span style=\" text-decoration: underline; color:#0000ff;\">Github Releases</span></a></p><p>Server<span style=\" font-size:9pt;\">: </span><a href=\"https://github.com/JsPako/AmazonWatch/releases\"><span style=\" text-decoration: underline; color:#0000ff;\">Github Server Releases</span></a></p><p>Source<span style=\" font-size:9pt;\">: </span><a href=\"https://github.com/JsPako/AmazonWatch\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/AmazonWatch</span></a></p></body></html>"))
+        self.label.setText(_translate("aboutWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">A client application for communicating with the Amazon API to track product prices. Programmed in Python 3.7 using the PyQt5 tool kit.</span></p><p><br/><span style=\" font-size:9pt;\">Client: </span><a href=\"https://github.com/JsPako/AmazonWatch/releases\"><span style=\" text-decoration: underline; color:#0000ff;\">Github Releases</span></a></p><p>Server<span style=\" font-size:9pt;\">: </span><a href=\"https://github.com/JsPako/AmazonWatch/releases\"><span style=\" text-decoration: underline; color:#0000ff;\">Github Server Releases</span></a></p><p>Source<span style=\" font-size:9pt;\">: </span><a href=\"https://github.com/JsPako/AmazonWatch\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/AmazonWatch</span></a></p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(
             self.tab), _translate("aboutWindow", "About"))
         self.pakoLabel.setTitle(_translate("aboutWindow", "JsPako"))
@@ -108,14 +108,14 @@ class Ui_aboutWindow(object):
                                            "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
                                            "p, li { white-space: pre-wrap; }\n"
                                            "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Client / Server Programmer</p>\n"
+                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Client / API Programmer</p>\n"
                                            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Github: <a href=\"https://github.com/JsPako\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/JsPako</span></a></p></body></html>"))
         self.itsRommelsLabel.setTitle(_translate("aboutWindow", "ItsRommels"))
         self.infoLabel2.setText(_translate("aboutWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
                                            "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
                                            "p, li { white-space: pre-wrap; }\n"
                                            "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Server Programmer</p>\n"
+                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">API Programmer</p>\n"
                                            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Github: <a href=\"https://github.com/ItsRommels\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/ItsRommels</span></a></p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(
             self.tab_2), _translate("aboutWindow", "Author"))
