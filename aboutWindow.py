@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Author: JsPako, ItsRommels
+# @Author: JsPako
 # @Webpage: https://github.com/JsPako/AmazonWatch
 
 import os
@@ -22,6 +22,8 @@ class Ui_aboutWindow(object):
         self.tab.setObjectName("tab")
         self.label = QtWidgets.QLabel(self.tab)
         self.label.setGeometry(QtCore.QRect(10, 20, 331, 141))
+        aboutWindow.setMinimumSize(QtCore.QSize(400, 300))
+        aboutWindow.setMaximumSize(QtCore.QSize(400, 300))
         self.label.setAlignment(QtCore.Qt.AlignLeading |
                                 QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.label.setWordWrap(True)
@@ -100,7 +102,7 @@ class Ui_aboutWindow(object):
     def retranslateUi(self, aboutWindow):
         _translate = QtCore.QCoreApplication.translate
         aboutWindow.setWindowTitle(_translate("aboutWindow", "About"))
-        self.label.setText(_translate("aboutWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">A client application for communicating with the Amazon API to track product prices. Programmed in Python 3.7 using the PyQt5 tool kit.</span></p><p><br/><span style=\" font-size:9pt;\">Client: </span><a href=\"https://github.com/JsPako/AmazonWatch/releases\"><span style=\" text-decoration: underline; color:#0000ff;\">Github Releases</span></a></p><p>Server<span style=\" font-size:9pt;\">: </span><a href=\"https://github.com/JsPako/AmazonWatch/releases\"><span style=\" text-decoration: underline; color:#0000ff;\">Github Server Releases</span></a></p><p>Source<span style=\" font-size:9pt;\">: </span><a href=\"https://github.com/JsPako/AmazonWatch\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/AmazonWatch</span></a></p></body></html>"))
+        self.label.setText(_translate("aboutWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">An application for contacting the Amazon API and tracking products. Programmed in Python 3.7 using PyQt5 and the PyQt5 tool kit.</span></p><p><br/><br/><br/><span style=\" font-size:9pt;\">Release: </span><a href=\"https://github.com/JsPako/AmazonWatch/releases\"><span style=\" text-decoration: underline; color:#0000ff;\">Github Releases</span></a></p><p>Source<span style=\" font-size:9pt;\">: </span><a href=\"https://github.com/JsPako/AmazonWatch\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/AmazonWatch</span></a></p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(
             self.tab), _translate("aboutWindow", "About"))
         self.pakoLabel.setTitle(_translate("aboutWindow", "JsPako"))
@@ -115,7 +117,7 @@ class Ui_aboutWindow(object):
                                            "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
                                            "p, li { white-space: pre-wrap; }\n"
                                            "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">API Programmer</p>\n"
+                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Programmer</p>\n"
                                            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Github: <a href=\"https://github.com/ItsRommels\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/ItsRommels</span></a></p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(
             self.tab_2), _translate("aboutWindow", "Author"))
@@ -810,13 +812,3 @@ class Ui_aboutWindow(object):
                                         "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Release Page: <a href=\"https://github.com/JsPako/AmazonWatch/releases\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/AmazonWatch/</span></a></p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(
             self.tab_4), _translate("aboutWindow", "Version"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    aboutWindow = QtWidgets.QMainWindow()
-    ui = Ui_aboutWindow()
-    ui.setupUi(aboutWindow)
-    aboutWindow.show()
-    sys.exit(app.exec_())

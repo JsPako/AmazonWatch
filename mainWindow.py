@@ -1,21 +1,28 @@
 # -*- coding: utf-8 -*-
-# @Author: JsPako, ItsRommels
+# @Author: JsPako
 # @Webpage: https://github.com/JsPako/AmazonWatch
 
 import os
 import webbrowser
-import setup
 import sys
 import multiprocessing
+import handler
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QSystemTrayIcon, QMenu
+from aboutWindow import Ui_aboutWindow
 
 
 class Ui_mainWindow(object):
+    def openAbout(self):
+        self.aboutWindow = QtWidgets.QMainWindow()
+        self.aboutUI = Ui_aboutWindow()
+        self.aboutUI.setupUi(self.aboutWindow)
+        self.aboutWindow.show()
+
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
         mainWindow.setWindowModality(QtCore.Qt.NonModal)
-        mainWindow.resize(800, 500)
+        mainWindow.resize(700, 500)
         scriptDir = os.path.dirname(os.path.realpath(__file__))
         mainWindow.setWindowIcon(QtGui.QIcon(
             scriptDir + '/resources/logo.png'))
@@ -26,8 +33,8 @@ class Ui_mainWindow(object):
         sizePolicy.setHeightForWidth(
             mainWindow.sizePolicy().hasHeightForWidth())
         mainWindow.setSizePolicy(sizePolicy)
-        mainWindow.setMinimumSize(QtCore.QSize(800, 500))
-        mainWindow.setMaximumSize(QtCore.QSize(800, 500))
+        mainWindow.setMinimumSize(QtCore.QSize(700, 500))
+        mainWindow.setMaximumSize(QtCore.QSize(700, 500))
         mainWindow.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.centralwidget = QtWidgets.QWidget(mainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -38,6 +45,7 @@ class Ui_mainWindow(object):
         self.confirmButton.setFont(font)
         self.confirmButton.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.confirmButton.setObjectName("confirmButton")
+        self.confirmButton.clicked.connect(self.addList)
         self.itemName = QtWidgets.QLineEdit(self.centralwidget)
         self.itemName.setGeometry(QtCore.QRect(130, 340, 361, 20))
         font = QtGui.QFont()
@@ -71,10 +79,13 @@ class Ui_mainWindow(object):
         self.itemURLLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.itemURLLabel.setObjectName("itemURLLabel")
         self.removeButton = QtWidgets.QPushButton(self.centralwidget)
-        self.removeButton.setGeometry(QtCore.QRect(680, 330, 101, 23))
+        self.removeButton.setGeometry(QtCore.QRect(580, 330, 101, 23))
         self.removeButton.setObjectName("removeButton")
-        self.APIFrame = QtWidgets.QFrame(self.centralwidget)
-        self.APIFrame.setGeometry(QtCore.QRect(540, 360, 241, 91))
+        self.removeButton.clicked.connect(self.deleteList)
+        self.refreshButton = QtWidgets.QPushButton(self.centralwidget)
+        self.refreshButton.setGeometry(QtCore.QRect(580, 360, 101, 23))
+        self.refreshButton.setObjectName("refreshButton")
+        self.refreshButton.clicked.connect(handler.handler)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -243,49 +254,10 @@ class Ui_mainWindow(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled,
                          QtGui.QPalette.PlaceholderText, brush)
-        self.APIFrame.setPalette(palette)
-        self.APIFrame.setAutoFillBackground(True)
-        self.APIFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.APIFrame.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.APIFrame.setObjectName("APIFrame")
-        self.regionLabel = QtWidgets.QLabel(self.APIFrame)
-        self.regionLabel.setGeometry(QtCore.QRect(10, 0, 101, 31))
         font = QtGui.QFont()
         font.setPointSize(9)
-        self.regionLabel.setFont(font)
-        self.regionLabel.setObjectName("regionLabel")
-        self.updateButton = QtWidgets.QPushButton(self.APIFrame)
-        self.updateButton.setGeometry(QtCore.QRect(160, 60, 71, 23))
-        font = QtGui.QFont()
-        font.setPointSize(8)
-        self.updateButton.setFont(font)
-        self.updateButton.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.updateButton.setObjectName("updateButton")
-        self.regionSelect = QtWidgets.QLabel(self.APIFrame)
-        self.regionSelect.setGeometry(QtCore.QRect(100, 0, 51, 31))
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.regionSelect.setFont(font)
-        self.regionSelect.setText("")
-        self.regionSelect.setAlignment(QtCore.Qt.AlignCenter)
-        self.regionSelect.setObjectName("regionSelect")
-        self.apiLabel = QtWidgets.QLabel(self.APIFrame)
-        self.apiLabel.setGeometry(QtCore.QRect(10, 30, 61, 31))
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.apiLabel.setFont(font)
-        self.apiLabel.setObjectName("apiLabel")
-        self.apiSelect = QtWidgets.QLabel(self.APIFrame)
-        self.apiSelect.setGeometry(QtCore.QRect(70, 30, 161, 31))
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.apiSelect.setFont(font)
-        self.apiSelect.setText("")
-        self.apiSelect.setAlignment(
-            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        self.apiSelect.setObjectName("apiSelect")
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(20, 10, 761, 301))
+        self.tableWidget.setGeometry(QtCore.QRect(20, 10, 661, 301))
         self.tableWidget.setMaximumSize(QtCore.QSize(761, 16777215))
         self.tableWidget.setSelectionMode(
             QtWidgets.QAbstractItemView.SingleSelection)
@@ -300,6 +272,11 @@ class Ui_mainWindow(object):
         self.tableWidget.setHorizontalHeaderItem(2, item)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(3, item)
+        header = self.tableWidget.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         self.tableWidget.verticalHeader().setCascadingSectionResizes(True)
         self.tableWidget.verticalHeader().setStretchLastSection(False)
         mainWindow.setCentralWidget(self.centralwidget)
@@ -314,23 +291,22 @@ class Ui_mainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(mainWindow)
         self.statusbar.setObjectName("statusbar")
         mainWindow.setStatusBar(self.statusbar)
-        self.actionAPI = QtWidgets.QAction(mainWindow)
-        self.actionAPI.setIconVisibleInMenu(False)
-        self.actionAPI.setObjectName("actionAPI")
         self.actionDirectory = QtWidgets.QAction(mainWindow)
         self.actionDirectory.setShortcut("")
         self.actionDirectory.setIconVisibleInMenu(False)
         self.actionDirectory.setObjectName("actionDirectory")
+        self.actionDirectory.triggered.connect(lambda: os.startfile(scriptDir))
         self.actionHelp = QtWidgets.QAction(mainWindow)
         self.actionHelp.setShortcut("")
         self.actionHelp.setObjectName("actionHelp")
         self.actionAbout = QtWidgets.QAction(mainWindow)
         self.actionAbout.setObjectName("actionAbout")
+        self.actionAbout.triggered.connect(self.openAbout)
         self.actionPrefrences = QtWidgets.QAction(mainWindow)
         self.actionPrefrences.setObjectName("actionPrefrences")
         self.actionGithub = QtWidgets.QAction(mainWindow)
         self.actionGithub.setObjectName("actionGithub")
-        self.menuFile.addAction(self.actionAPI)
+        self.actionGithub.triggered.connect(openBrowser)
         self.menuFile.addAction(self.actionGithub)
         self.menuFile.addAction(self.actionDirectory)
         self.menuAbout.addAction(self.actionHelp)
@@ -339,6 +315,7 @@ class Ui_mainWindow(object):
         self.menuBar.addAction(self.menuAbout.menuAction())
 
         self.retranslateUi(mainWindow)
+        self.updateList(mainWindow)
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
         mainWindow.setTabOrder(self.tableWidget, self.removeButton)
 
@@ -365,21 +342,9 @@ class Ui_mainWindow(object):
         self.removeButton.setStatusTip(_translate(
             "mainWindow", "Delete a product from the list."))
         self.removeButton.setText(_translate("mainWindow", "Delete"))
-        self.APIFrame.setStatusTip(_translate(
-            "mainWindow", "Extra Information"))
-        self.regionLabel.setStatusTip(
-            _translate("mainWindow", "Extra Information"))
-        self.regionLabel.setText(_translate("mainWindow", "Amazon Region:"))
-        self.updateButton.setStatusTip(
-            _translate("mainWindow", "Refresh everything."))
-        self.updateButton.setText(_translate("mainWindow", "Refresh"))
-        self.regionSelect.setStatusTip(
-            _translate("mainWindow", "Extra Information"))
-        self.apiLabel.setStatusTip(_translate(
-            "mainWindow", "Extra Information"))
-        self.apiLabel.setText(_translate("mainWindow", "API Key :"))
-        self.apiSelect.setStatusTip(_translate(
-            "mainWindow", "Extra Information"))
+        self.refreshButton.setStatusTip(_translate(
+            "mainWindow", "Refresh all prices."))
+        self.refreshButton.setText(_translate("mainWindow", "Refresh"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("mainWindow", "Product Name"))
         item = self.tableWidget.horizontalHeaderItem(1)
@@ -390,10 +355,6 @@ class Ui_mainWindow(object):
         item.setText(_translate("mainWindow", "Price Drop"))
         self.menuFile.setTitle(_translate("mainWindow", "Settings"))
         self.menuAbout.setTitle(_translate("mainWindow", "Help"))
-        self.actionAPI.setText(_translate("mainWindow", "Access Keys"))
-        self.actionAPI.setStatusTip(_translate(
-            "mainWindow", "Amazon API access keys settings."))
-        self.actionAPI.setShortcut(_translate("mainWindow", "Ctrl+N"))
         self.actionDirectory.setText(
             _translate("mainWindow", "File Directory"))
         self.actionDirectory.setStatusTip(
@@ -445,7 +406,7 @@ class Ui_mainWindow(object):
             self.tableWidget.setItem(
                 rowPosition, 1, QtWidgets.QTableWidgetItem(url))
             f = open("list.txt", "a+")
-            f.write("'" + name + "," + url + "," + ",'\n")
+            f.write("'" + name + "," + url + "," + ",'" + "\n")
             f.close()
             self.itemName.setText("")
             self.itemURL.setText("")
@@ -492,6 +453,10 @@ def apiTray():
     menu = QMenu()
     openAction = menu.addAction("Open GUI")
     openAction.triggered.connect(startGuiProcess)
+    menu.addSeparator()
+    actionGithub = menu.addAction("Visit Github")
+    actionGithub.triggered.connect(openBrowser)
+    menu.addSeparator()
     exitAction = menu.addAction("Exit")
     exitAction.triggered.connect(app.quit)
     trayIcon.setContextMenu(menu)
@@ -510,13 +475,19 @@ def startGui():
 def startGuiProcess():
     guiProcess = multiprocessing.Process(target=startGui)
     guiProcess.start()
+    guiProcess.join()
 
 
 def startApiProcess():
     apiProcess = multiprocessing.Process(target=apiTray)
     apiProcess.start()
+    apiProcess.join()
+
+
+def openBrowser():
+    webbrowser.open("https://github.com/JsPako/AmazonWatch")
 
 
 if __name__ == "__main__":
-    startApiProcess()
     startGuiProcess()
+    startApiProcess()
